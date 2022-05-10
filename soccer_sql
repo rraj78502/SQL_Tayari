@@ -1,0 +1,1627 @@
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of venues for EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) 
+FROM soccer_venue;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of countries participated in the EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(DISTINCT team_id) 
+FROM player_mast;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number goals scored in EURO cup 2016 within normal play schedule
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) 
+FROM goal_details;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of matches ended with a result
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) 
+FROM match_mast 
+WHERE results='WIN';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of matches ended with draws
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) 
+FROM match_mast 
+WHERE results='DRAW';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the date when did Football EURO cup 2016 begin
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT play_date "Beginning Date"
+FROM match_mast
+WHERE match_no=1;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of self-goals scored in EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) 
+FROM goal_details 
+WHERE goal_type='O';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Count the number of matches ended with a results in group stage
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) 
+FROM match_mast 
+WHERE results='WIN' 
+AND play_stage='G';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of matches got a result by penalty shootout
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(DISTINCT match_no) 
+FROM penalty_shootout;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of matches decided by penalties in the Round of 16
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) 
+FROM match_mast 
+WHERE decided_by='P' AND play_stage='R';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of goal scored in every match within normal play schedule
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,COUNT(*) 
+FROM goal_details 
+GROUP BY match_no 
+ORDER BY match_no;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the match no, date of play, and goal scored for that match in which no stoppage time have been added in 1st half of play
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no, play_date, goal_score 
+FROM  match_mast
+WHERE stop1_sec=0;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of matches ending with a goalless draw in group stage of play
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(DISTINCT(match_no))
+FROM match_details
+WHERE win_lose='D' 
+AND goal_score=0 AND play_stage='G';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of matches ending with only one goal win except those matches which was decided by penalty shootout
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(goal_score) 
+FROM match_details 
+WHERE win_lose='W' 
+AND decided_by<>'P'
+AND goal_score=1;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the total number of players replaced in the tournament
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) as "Player Replaced"
+FROM player_in_out
+WHERE in_out='I';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the total number of players replaced within normal time of play
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) as "Player Replaced"
+FROM player_in_out
+WHERE in_out='I' 
+AND play_schedule='NT';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of players replaced in the stoppage time
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) as "Player Replaced"
+FROM player_in_out
+WHERE in_out='I' 
+AND play_schedule='ST';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the total number of players replaced in the first half of play
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) as "Player Replaced"
+FROM player_in_out
+WHERE in_out='I'
+AND play_schedule='NT'
+AND play_half=1;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the total number of goalless draws have there in the entire tournament
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(DISTINCT match_no) 
+FROM match_details 
+WHERE win_lose='D' 
+AND goal_score=0;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the total number of players replaced in the extra time of play
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) 
+FROM  player_in_out 
+WHERE play_schedule='ET'
+AND in_out='I';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Compute a list to show the number of substitute happened in various stage of play for the entire tournament
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT play_half,play_schedule,COUNT(*) 
+FROM player_in_out 
+WHERE in_out='I'
+GROUP BY play_half,play_schedule
+ORDER BY play_half,play_schedule,count(*) DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of shots taken in penalty shootout matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) AS "Number of Penalty Kicks"
+FROM penalty_shootout;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of shots scored goal in penalty shootout matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) AS "Goal Scored by Penalty Kicks"
+FROM penalty_shootout
+WHERE score_goal='Y';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of shots missed or saved in penalty shootout matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) AS "Goal missed or saved by Penalty Kicks"
+FROM penalty_shootout
+WHERE score_goal='N';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Prepare a list of players with shot number they taken in penalty shootout matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT c.match_no,a.country_name AS "Team", 
+b.player_name, b.jersey_no, c.score_goal ,c.kick_no
+FROM soccer_country a, penalty_shootout c, player_mast b
+WHERE c.team_id=a.country_id
+AND c.player_id=b.player_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of penalty shots taken by the teams
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.country_name, COUNT(b.*) as "Number of Shots" 
+FROM soccer_country a, penalty_shootout b
+WHERE b.team_id=a.country_id
+GROUP BY a.country_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of booking happened in each half of play within normal play schedule
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT play_half,play_schedule,COUNT(*) 
+FROM player_booked
+WHERE play_schedule='NT'
+GROUP BY play_half,play_schedule;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of booking happened in stoppage time
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*) 
+FROM player_booked
+WHERE play_schedule='ST';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the teams played the first match of EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,country_name
+FROM match_details a, soccer_country b
+WHERE a.team_id=b.country_id
+AND a.match_no=1;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the winner of EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name as Team 
+FROM soccer_country 
+WHERE country_id in (
+SELECT team_id 
+FROM match_details 
+WHERE play_stage='F' and win_lose='W');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the match with match no, play stage, goal scored, and the audience which was the highest audience match
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no, play_stage, goal_score, audence 
+FROM match_mast 
+WHERE audence=(
+SELECT max(audence) 
+FROM match_mast);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the match no in which Germany played against Poland
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no 
+FROM match_details 
+WHERE team_id=(
+SELECT country_id 
+FROM soccer_country 
+WHERE country_name='Germany') 
+OR team_id=(
+SELECT country_id 
+FROM soccer_country 
+WHERE country_name='Poland') 
+GROUP BY match_no 
+HAVING COUNT(DISTINCT team_id)=2;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the match no, play stage, date of match, number of gole scored, and the result of the match where Portugal played against Hungary
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no, play_stage, play_date, results, goal_score
+FROM match_mast
+WHERE match_no 
+IN(
+SELECT match_no 
+FROM match_details 
+WHERE team_id=(
+	SELECT country_id 
+	FROM soccer_country 
+	WHERE country_name='Portugal') OR team_id=(
+		SELECT country_id 
+		FROM soccer_country 
+		WHERE country_name='Hungary') 
+GROUP BY match_no 
+HAVING COUNT(DISTINCT team_id)=2);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the list of players scored number of goals in every matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,country_name, player_name, COUNT(match_no)
+FROM goal_details a, soccer_country b, player_mast c
+WHERE a.team_id=b.country_id
+AND a.player_id=c.player_id
+GROUP BY match_no,country_name,player_name
+ORDER BY match_no;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the teams who played the heighest audience match
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name
+FROM soccer_country
+WHERE country_id IN(
+   SELECT team_id 
+   FROM goal_details 
+   WHERE match_no=(
+     SELECT match_no 
+     FROM match_mast 
+     WHERE audence=(
+       SELECT max(audence) 
+       FROM match_mast)
+ORDER BY audence DESC));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player who scored the last goal for Portugal against Hungary
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT player_name 
+FROM player_mast 
+WHERE player_id=(
+  SELECT player_id 
+  FROM goal_details 
+    where match_no=(SELECT match_no FROM match_details 
+WHERE team_id=(
+SELECT country_id FROM soccer_country 
+WHERE country_name='Hungary') 
+or team_id=(SELECT country_id FROM soccer_country 
+WHERE country_name='Portugal') 
+GROUP BY match_no HAVING COUNT(DISTINCT team_id)=2) 
+    AND team_id=(SELECT team_id
+FROM soccer_country a, soccer_team b
+WHERE a.country_id=b.team_id AND country_name='Portugal') 
+    AND goal_time=(
+      SELECT max(goal_time) 
+      FROM goal_details 
+        WHERE match_no=(SELECT match_no FROM match_details 
+WHERE team_id=(
+SELECT country_id FROM soccer_country 
+WHERE country_name='Hungary') 
+or team_id=(SELECT country_id FROM soccer_country 
+WHERE country_name='Portugal') 
+GROUP BY match_no HAVING COUNT(DISTINCT team_id)=2) AND team_id=(
+SELECT team_id
+FROM soccer_country a, soccer_team b
+WHERE a.country_id=b.team_id AND country_name='Portugal'))
+                );
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the 2nd highest stoppage time which had been added in 2nd half of play
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT MAX(stop2_sec) 
+FROM match_mast
+WHERE stop2_sec<>(
+SELECT MAX(stop2_sec) 
+FROM match_mast);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the teams played the match where 2nd highest stoppage time had been added in 2nd half of play
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name 
+FROM soccer_country 
+WHERE country_id IN(
+SELECT team_id 
+FROM match_details 
+WHERE match_no IN(
+SELECT match_no 
+FROM match_mast 
+WHERE stop2_sec=(
+SELECT max(stop2_sec) 
+FROM match_mast
+WHERE stop2_sec<>(
+SELECT max(stop2_sec) 
+FROM match_mast))));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the match no, date of play and the 2nd highest stoppage time which have been added in the 2nd half of play
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,play_date,stop2_sec
+FROM match_mast a
+WHERE (2-1) = (
+SELECT COUNT(DISTINCT(b.stop2_sec))
+FROM match_mast b
+WHERE b.stop2_sec > a.stop2_sec);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the team which was defeated by Portugal in EURO cup 2016 final
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name 
+FROM soccer_country 
+WHERE country_id=(
+SELECT team_id 
+FROM match_details 
+WHERE play_stage='F'
+AND team_id<>(
+SELECT country_id 
+FROM soccer_country 
+WHERE country_name='Portugal'));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the club which supplied the most number of players to the 2016 EURO cup
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT playing_club, COUNT(playing_club) 
+FROM player_mast  GROUP BY playing_club 
+HAVING COUNT (playing_club)=( 
+SELECT MAX(mycount) 
+FROM ( 
+SELECT playing_club, COUNT(playing_club) mycount 
+FROM player_mast 
+GROUP BY playing_club) pm);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player and his jersey number who scored the first penalty of the tournament
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT player_name,jersey_no 
+FROM player_mast 
+WHERE player_id=(
+SELECT player_id 
+FROM goal_details 
+WHERE goal_type='P' AND match_no=(
+SELECT MIN(match_no) 
+FROM goal_details 
+WHERE goal_type='P' AND play_stage='G'));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player along with his team and jersey number who scored the first penalty of the tournament
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.player_name,a.jersey_no,d.country_name
+FROM player_mast a, goal_details b, goal_details c, soccer_country d
+WHERE a.player_id=b.player_id AND a.team_id=d.country_id AND 
+a.player_id=(
+SELECT b.player_id 
+FROM goal_details b
+WHERE b.goal_type='P' AND b.match_no=(
+SELECT MIN(c.match_no) 
+FROM goal_details c
+WHERE c.goal_type='P' AND c.play_stage='G'))
+GROUP BY player_name,jersey_no,country_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player who was the goalkeeper for Italy in penalty shootout against Germany in Football EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT player_name 
+FROM player_mast 
+WHERE player_id=(
+SELECT player_gk 
+FROM penalty_gk 
+WHERE match_no=(
+SELECT match_no 
+FROM penalty_gk
+WHERE team_id=(
+SELECT country_id 
+FROM soccer_country 
+WHERE country_name='Italy') 
+OR team_id=(
+SELECT country_id 
+FROM soccer_country 
+WHERE country_name='Germany') 
+GROUP BY match_no 
+HAVING COUNT(DISTINCT team_id)=2
+) 
+AND team_id=(
+SELECT country_id 
+FROM soccer_country 
+WHERE country_name='Italy')
+);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of goals Germany scored at the tournament
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(player_id) 
+FROM goal_details 
+WHERE team_id=
+(
+SELECT country_id 
+FROM soccer_country
+WHERE country_name='Germany'
+);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the players along with their jersey no., and playing club, who were the goalkeepers for the England squad for 2016 EURO cup
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT player_name, jersey_no, playing_club 
+FROM player_mast 
+WHERE posi_to_play='GK' AND team_id=(
+SELECT country_id 
+FROM soccer_country
+WHERE country_name='England');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the players with other information under contract to Liverpool were in the Squad of England in 2016 EURO cup
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT player_name, jersey_no, posi_to_play, age
+FROM player_mast 
+WHERE playing_club='Liverpool'
+AND team_id=(
+SELECT country_id
+FROM soccer_country
+WHERE country_name='England'
+);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player with other infromation Who scored the last goal in the 2nd semi final i.e. 50th match in EURO cub 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.player_name, b.goal_time, b.goal_half, c.country_name
+FROM player_mast a, goal_details b,soccer_country c
+WHERE a.player_id=b.player_id
+AND b.team_id=c.country_id
+AND match_no=50
+AND goal_time= (
+SELECT MAX(goal_time) 
+FROM  goal_details 
+WHERE match_no=50);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player Who was the captain of the EURO cup 2016 winning team from Portugal
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT player_name
+FROM player_mast
+WHERE player_id IN (
+SELECT player_captain 
+FROM match_captain
+WHERE  team_id=(
+SELECT team_id
+FROM match_details
+WHERE play_stage='F' AND win_lose='W'));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of players played for france in the final
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT COUNT(*)+11 as "Number of players shared fields" 
+FROM player_in_out 
+WHERE match_no=(
+SELECT match_no 
+FROM match_mast 
+WHERE play_stage='F')
+AND in_out='I' 
+AND team_id=(
+SELECT country_id 
+FROM soccer_country 
+WHERE country_name='France');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the goalkeeper of the team Germany who didn't concede any goal in their group stage matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT player_name,jersey_no 
+FROM player_mast 
+WHERE player_id IN(
+SELECT player_gk 
+FROM match_details 
+WHERE  play_stage='G' and team_id IN(
+SELECT country_id 
+FROM soccer_country 
+WHERE country_name='Germany'));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the runners-up in Football EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name 
+FROM soccer_country 
+WHERE country_id=(
+SELECT team_id 
+FROM match_details 
+WHERE play_stage='F' AND win_lose='L'
+AND team_id<>(
+SELECT country_id 
+FROM soccer_country 
+WHERE country_name='Portugal'));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the maximum penalty shots taken by the teams
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.country_name, COUNT(b.*) shots 
+FROM soccer_country a, penalty_shootout b
+WHERE b.team_id=a.country_id
+GROUP BY a.country_name
+having COUNT(b.*)=(
+SELECT MAX(shots) FROM (
+SELECT COUNT(*) shots 
+FROM penalty_shootout
+GROUP BY team_id) inner_result);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the maximum number of penalty shots taken by the players
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT c.country_name,a.player_name, a.jersey_no,COUNT(b.*) shots 
+FROM player_mast a, penalty_shootout b, soccer_country c
+WHERE b.player_id=a.player_id
+AND b.team_id=c.country_id
+GROUP BY c.country_name,a.player_name,a.jersey_no
+HAVING COUNT(b.*)=(
+SELECT MAX(shots) FROM (
+SELECT COUNT(*) shots 
+FROM penalty_shootout
+GROUP BY player_id) inner_result);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the match no. where highest number of penalty shots taken
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,
+       COUNT(*) shots
+FROM penalty_shootout
+GROUP BY match_no
+HAVING COUNT(*)=
+  (SELECT MAX(shots)
+   FROM
+     (SELECT COUNT(*) shots
+      FROM penalty_shootout
+      GROUP BY match_no) inner_result);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the match no. and teams who played the match where highest number of penalty shots had been taken
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT b.match_no,
+       a.country_name
+FROM penalty_shootout b,
+     soccer_country a
+WHERE b.team_id=a.country_id
+  AND match_no=
+    (SELECT match_no
+     FROM penalty_shootout
+     GROUP BY match_no
+     HAVING COUNT(*)=
+       (SELECT MAX(shots)
+        FROM
+          (SELECT COUNT(*) shots
+           FROM penalty_shootout
+           GROUP BY match_no) inner_result))
+GROUP BY b.match_no,
+         a.country_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player of portugal who taken the 7th kick against poland
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.match_no,
+       b.player_name,
+       a.kick_no
+FROM penalty_shootout a,
+     player_mast b
+WHERE a.player_id=b.player_id
+  AND kick_no=7
+  AND match_no=
+    (SELECT match_no
+     FROM penalty_shootout
+     WHERE team_id =
+         (SELECT country_id
+          FROM soccer_country
+          WHERE country_name='Portugal' )
+     GROUP BY match_no)
+GROUP BY match_no,
+         player_name,
+         kick_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the stage of match where the penalty kick number 23 had been taken
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,
+       play_stage
+FROM match_mast
+WHERE match_no=
+    (SELECT match_no
+     FROM penalty_shootout
+     WHERE kick_id=23);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the venues where penalty shootout matches played
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT venue_name
+FROM soccer_venue
+WHERE venue_id IN
+    (SELECT venue_id
+     FROM match_mast
+     WHERE match_no IN
+         (SELECT DISTINCT match_no
+          FROM penalty_shootout));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the date when penalty shootout matches played
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT play_date
+FROM match_mast
+WHERE match_no IN
+    (SELECT DISTINCT match_no
+     FROM penalty_shootout);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the name of the venue with city where the EURO cup 2016 final match was played
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT venue_name, city
+FROM soccer_venue a
+JOIN soccer_city b ON a.city_id=b.city_id
+JOIN match_mast d ON d.venue_id=a.venue_id 
+AND d.play_stage='F';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of goal scored by each team in every match within normal play schedule
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,country_name,goal_score
+FROM match_details a
+JOIN soccer_country b
+ON a.team_id=b.country_id
+WHERE decided_by='N'
+ORDER BY match_no;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the total number of goals scored by each player within normal play schedule and arrange the result set in descending order of goal
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT player_name,count(*),country_name
+FROM goal_details a
+JOIN player_mast b ON a.player_id=b.player_id
+JOIN soccer_country c ON a.team_id=c.country_id
+WHERE goal_schedule = 'NT'
+GROUP BY player_name,country_name
+ORDER BY count(*) DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the highest individual scorer in EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT player_name,country_name,count(player_name)
+FROM goal_details gd
+JOIN player_mast pm ON gd.player_id =pm.player_id
+JOIN soccer_country sc ON pm.team_id = sc.country_id
+GROUP BY country_name,player_name HAVING COUNT(player_name) >= ALL
+  (SELECT COUNT(player_name)
+   FROM goal_details gd
+   JOIN player_mast pm ON gd.player_id =pm.player_id
+   JOIN soccer_country sc ON pm.team_id = sc.country_id
+   GROUP BY country_name,player_name);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the scorer of only goal along with his country and jersey number in the final of EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT player_name,jersey_no,country_name
+FROM goal_details a
+JOIN player_mast b ON a.player_id=b.player_id
+JOIN soccer_country c ON a.team_id=c.country_id
+WHERE play_stage='F';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the country where Football EURO cup 2016 held
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name
+FROM soccer_country a
+JOIN soccer_city b ON a.country_id=b.country_id
+JOIN soccer_venue c ON b.city_id=c.city_id
+GROUP BY country_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player who socred first goal of EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.player_name,a.jersey_no,b.country_name,c.goal_time,
+c.play_stage,c.goal_schedule, c.goal_half 
+FROM player_mast a
+JOIN soccer_country b
+ON a.team_id=b.country_id
+JOIN goal_details c
+ON c.player_id=a.player_id
+WHERE goal_id=1;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the name and country of the referee who managed the opening match
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT b.referee_name, c.country_name 
+FROM match_mast a
+NATURAL JOIN referee_mast b 
+NATURAL JOIN soccer_country c
+WHERE match_no=1;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the name and country of the referee who managed the final match
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT b.referee_name, c.country_name 
+FROM match_mast a
+NATURAL JOIN referee_mast b 
+NATURAL JOIN soccer_country c
+WHERE play_stage='F';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the name and country of the referee who assisted the referee in the opening match
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT ass_ref_name, country_name 
+FROM asst_referee_mast a
+JOIN soccer_country b
+ON a.country_id=b.country_id
+JOIN match_details c
+ON a.ass_ref_id=c.ass_ref
+WHERE match_no=1;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the name and country of the referee who assisted the referee in the final match
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT ass_ref_name, country_name 
+FROM asst_referee_mast a
+JOIN soccer_country b
+ON a.country_id=b.country_id
+JOIN match_details c
+ON a.ass_ref_id=c.ass_ref
+WHERE play_stage='F';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the city where the opening match of EURO cup 2016 played
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.venue_name, b.city
+FROM soccer_venue a
+JOIN soccer_city b ON a.city_id=b.city_id
+JOIN match_mast c ON a.venue_id=c.venue_id
+WHERE match_no=1;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the stadium hosted the final match of EURO cup 2016 along with the capacity, and audience for that match
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.venue_name, b.city, a.aud_capacity, c.audence
+FROM soccer_venue a
+JOIN soccer_city b ON a.city_id=b.city_id
+JOIN match_mast c ON a.venue_id=c.venue_id
+WHERE play_stage='F';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Compute a report that contain the number of matches played in each venue along with their city
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.venue_name, b.city, count(c.match_no)
+FROM soccer_venue a
+JOIN soccer_city b ON a.city_id=b.city_id
+JOIN match_mast c ON a.venue_id=c.venue_id
+GROUP BY venue_name,city
+ORDER BY venue_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player who was the first player to be sent off at the tournament EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no, country_name, player_name, 
+booking_time as "sent_off_time", play_schedule, jersey_no
+FROM player_booked a
+JOIN player_mast b
+ON a.player_id=b.player_id
+JOIN soccer_country c
+ON a.team_id=c.country_id
+AND  a.sent_off='Y'
+AND match_no=(
+	SELECT MIN(match_no) 
+	from player_booked)
+ORDER BY match_no,play_schedule,play_half,booking_time;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the teams that scored only one goal to the torunament
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name as "Team" ,team_group, goal_for
+FROM soccer_team
+JOIN soccer_country 
+ON soccer_team.team_id=soccer_country.country_id
+AND goal_for=1;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the yellow cards received by each country
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name, COUNT(*)
+FROM soccer_country 
+JOIN player_booked
+ON soccer_country.country_id=player_booked.team_id
+GROUP BY country_name
+ORDER BY COUNT(*) DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the venue with number of goals that has seen
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT venue_name, count(venue_name)
+FROM goal_details
+JOIN soccer_country
+ON goal_details.team_id=soccer_country.country_id
+JOIN match_mast ON goal_details.match_no=match_mast.match_no
+JOIN soccer_venue ON match_mast.venue_id=soccer_venue.venue_id
+GROUP BY venue_name
+ORDER BY COUNT(venue_name) DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the match where no stoppage time added in 1st half of play
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_details.match_no, soccer_country.country_name 
+FROM match_mast
+JOIN match_details 
+ON match_mast.match_no=match_details.match_no
+JOIN soccer_country
+ON match_details.team_id=soccer_country.country_id
+WHERE stop1_sec=0;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the team(s) who conceded the most goals in EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name,team_group,match_played,
+won,lost,goal_for,goal_agnst
+FROM soccer_team 
+JOIN soccer_country 
+ON soccer_team.team_id=soccer_country.country_id
+WHERE goal_agnst=(
+SELECT MAX(goal_agnst) 
+FROM soccer_team);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the match where highest stoppege time added in 2nd half of play
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_details.match_no, soccer_country.country_name,
+match_mast.stop2_sec as "Stoppage Time(sec.)" 
+FROM match_mast
+JOIN match_details 
+ON match_mast.match_no=match_details.match_no
+JOIN soccer_country
+ON match_details.team_id=soccer_country.country_id
+WHERE stop2_sec IN (
+SELECT MAX(stop2_sec) 
+FROM match_mast);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the matchs ending with a goalless draw in group stage of play
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,country_name 
+FROM match_details
+JOIN soccer_country ON soccer_country.country_id=match_details.team_id
+WHERE win_lose='D' AND goal_score=0 AND play_stage='G' 
+ORDER BY match_no;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the match no. and the teams played in that match where the 2nd highest stoppage time had been added in the 2nd half of play
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.match_no, c.country_name, a.stop2_sec
+FROM match_mast a
+JOIN match_details b ON a.match_no=b.match_no
+JOIN soccer_country c ON b.team_id=c.country_id
+WHERE (2-1) = (
+SELECT COUNT(DISTINCT(b.stop2_sec))
+FROM match_mast b
+WHERE b.stop2_sec > a.stop2_sec);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player and his team and how many matches he played as a goalkeeper for his team
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT b.country_name,c.player_name,COUNT(a.player_gk) count_gk
+FROM match_details a
+JOIN soccer_country b ON a.team_id=b.country_id
+JOIN player_mast c ON a.player_gk=c.player_id
+GROUP BY b.country_name,c.player_name
+ORDER BY country_name,player_name,count_gk DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the venue that has seen the most goals
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT venue_name, count(venue_name)
+FROM goal_details
+JOIN soccer_country
+ON goal_details.team_id=soccer_country.country_id
+JOIN match_mast ON goal_details.match_no=match_mast.match_no
+JOIN soccer_venue ON match_mast.venue_id=soccer_venue.venue_id
+GROUP BY venue_name
+HAVING COUNT (venue_name)=( 
+SELECT MAX(mycount) 
+FROM ( 
+SELECT venue_name, COUNT(venue_name) mycount
+FROM goal_details
+JOIN soccer_country
+ON goal_details.team_id=soccer_country.country_id
+JOIN match_mast ON goal_details.match_no=match_mast.match_no
+JOIN soccer_venue ON match_mast.venue_id=soccer_venue.venue_id
+GROUP BY venue_name) gd);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the oldest player to have appeared in a EURO cup 2016 match
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.country_name,b.player_name,b.jersey_no,b.age 
+FROM soccer_country a
+JOIN player_mast b 
+ON a.country_id=b.team_id
+WHERE b.age IN (
+SELECT MAX(age) 
+FROM player_mast);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find those two teams which scored three goals in a single game at this tournament
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,country_name
+FROM match_details a
+JOIN soccer_country b
+ON a.team_id=b.country_id
+WHERE goal_score=3  AND win_lose='D';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the teams with other information that finished bottom of their respective groups after conceding four times in three games
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.country_name as Team , b.team_group,b.match_played, 
+b.goal_agnst, b.group_position 
+FROM soccer_country a
+JOIN soccer_team b
+ON a.country_id=b.team_id
+WHERE goal_agnst=4 AND group_position=4
+ORDER BY team_group;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find those three players with other information, who contracted to Lyon participated in the EURO cup 2016 Finals
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.player_name, a.jersey_no, a.posi_to_play, a.age, b.country_name
+FROM player_mast a 
+JOIN soccer_country b
+ON a.team_id=b.country_id
+WHERE a.playing_club='Lyon'
+AND a.team_id IN (
+SELECT b.country_id 
+FROM soccer_country b
+WHERE b.country_id IN (
+SELECT c.team_id 
+FROM match_details c 
+WHERE c.play_stage='F'
+));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the final four teams in the tournament
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name
+FROM match_details a
+JOIN soccer_country b
+ON a.team_id=b.country_id
+WHERE play_stage='S';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the captains for the top four teams which participated in the semifinals
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name, player_name, jersey_no, posi_to_play 
+FROM match_captain a
+JOIN soccer_country b ON a.team_id=b.country_id
+JOIN player_mast c ON a.player_captain=c.player_id
+WHERE match_no IN(48,49);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the captains for all the matches in the tournament
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,country_name, player_name, jersey_no, posi_to_play 
+FROM match_captain a
+JOIN soccer_country b ON a.team_id=b.country_id
+JOIN player_mast c ON a.player_captain=c.player_id
+ORDER BY match_no;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the captain and goal keeper for all the matches for all the team
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.match_no,c.player_name as "Captain", 
+d.player_name as "Goal Keeper",e.country_name
+FROM match_captain a
+NATURAL JOIN match_details b
+JOIN soccer_country e ON b.team_id=e.country_id
+JOIN player_mast c ON a.player_captain=c.player_id
+JOIN player_mast d ON b.player_gk=d.player_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player who was selected for the Man of the Match Award in the finals of EURO cup 2016
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.player_name, b.country_name
+FROM player_mast a 
+JOIN match_mast c ON c.plr_of_match=a.player_id
+AND c.play_stage='F'
+JOIN soccer_country b
+ON a.team_id=b.country_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the substitute players who came into the field in the first half of play within normal play schedule
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,country_name,player_name,jersey_no,time_in_out
+FROM player_in_out a
+JOIN player_mast b ON a.player_id=b.player_id
+JOIN soccer_country c ON b.team_id=c.country_id
+WHERE a.in_out='I'
+AND a.play_schedule='NT'
+AND a.play_half=1
+ORDER BY match_no;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Prepare a list for the player of the match against each match
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,play_date,country_name,
+player_name AS "Player of the Match",jersey_no
+FROM match_mast a
+JOIN player_mast b ON 
+a.plr_of_match=b.player_id
+JOIN soccer_country c ON 
+b.team_id=c.country_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player along with his country who taken the penalty shot number 26
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,
+       country_name,
+       player_name
+FROM penalty_shootout a
+JOIN player_mast b ON a.player_id=b.player_id
+JOIN soccer_country c ON b.team_id=c.country_id
+WHERE kick_id=26;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the team against which the penalty shot number 26 had been taken
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,
+       country_name
+FROM penalty_shootout a
+JOIN soccer_country c ON a.team_id=c.country_id
+WHERE match_no=
+    (SELECT match_no
+     FROM penalty_shootout
+     WHERE kick_id=26)
+  AND country_name<>
+    (SELECT country_name
+     FROM soccer_country
+     WHERE country_id=
+         (SELECT team_id
+          FROM penalty_shootout
+          WHERE kick_id=26))
+GROUP BY match_no,
+         country_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the captain who was also the goalkeeper
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,
+       country_name,
+       player_name,
+       jersey_no
+FROM match_captain a
+JOIN soccer_country b ON a.team_id=b.country_id
+JOIN player_mast c ON a.player_captain=c.player_id
+AND posi_to_play='GK'
+ORDER BY match_no;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of captains who was also the goalkeeper
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT count(DISTINCT player_name)
+FROM match_captain a
+JOIN soccer_country b ON a.team_id=b.country_id
+JOIN player_mast c ON a.player_captain=c.player_id
+AND posi_to_play='GK';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the players along with their team booked number of times in the tournament
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.country_name,c.player_name,COUNT(b.*) Booked 
+FROM soccer_country a
+JOIN player_booked b ON a.country_id=b.team_id
+JOIN player_mast c ON b.player_id=c.player_id
+GROUP BY a.country_name,c.player_name
+ORDER BY a.country_name,Booked DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the players who booked most number of times
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT c.player_name,COUNT(b.*) Booked 
+FROM soccer_country a
+JOIN player_booked b ON a.country_id=b.team_id
+JOIN player_mast c ON b.player_id=c.player_id
+GROUP BY c.player_name
+having COUNT(b.*)=(
+SELECT MAX(mm) FROM (
+SELECT COUNT(*) mm 
+FROM player_booked 
+GROUP BY player_id) inner_result);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the number of players booked for each team
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.country_name,COUNT(b.*) Booked 
+FROM soccer_country a
+JOIN player_booked b ON a.country_id=b.team_id
+GROUP BY a.country_name
+ORDER BY Booked DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the most number of cards shown in the matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no, Booked FROM (
+SELECT match_no,COUNT(*) Booked 
+FROM player_booked  
+GROUP BY match_no) M1 where Booked=(
+SELECT MAX(MX1) 
+FROM (SELECT match_no,COUNT(*) MX1 
+FROM player_booked  
+GROUP BY match_no) M2);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+List the name of assistant referees with their countries for each matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.match_no,
+       b.country_name,
+       c.ass_ref_name
+FROM match_details a
+JOIN asst_referee_mast c ON a.ass_ref=c.ass_ref_id
+JOIN soccer_country b ON c.country_id=b.country_id
+ORDER BY a.match_no;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the assistant referees of each countries assists the number of matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name,
+       count(DISTINCT match_no)
+FROM match_details a
+JOIN asst_referee_mast c ON a.ass_ref=c.ass_ref_id
+JOIN soccer_country b ON c.country_id=b.country_id
+GROUP BY country_name
+ORDER BY count(*) DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the countries from where the assistant referees assist most of the matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name,
+       count(DISTINCT match_no)
+FROM match_details a
+JOIN asst_referee_mast c ON a.ass_ref=c.ass_ref_id
+JOIN soccer_country b ON c.country_id=b.country_id
+GROUP BY country_name
+HAVING count(DISTINCT match_no)=
+  (SELECT max(mm)
+   FROM
+     (SELECT count(DISTINCT match_no) mm
+      FROM match_details a
+      JOIN asst_referee_mast c ON a.ass_ref=c.ass_ref_id
+      JOIN soccer_country b ON c.country_id=b.country_id
+      GROUP BY country_name) hh);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+List the name of referees with their countries for each match
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.match_no,
+       b.country_name,
+       c.referee_name
+FROM match_mast a
+JOIN referee_mast c ON a.referee_id=c.referee_id
+JOIN soccer_country b ON c.country_id=b.country_id
+ORDER BY a.match_no;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the referees of each country managed number of matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name,
+       count(match_no)
+FROM match_mast a
+JOIN referee_mast c ON a.referee_id=c.referee_id
+JOIN soccer_country b ON c.country_id=b.country_id
+GROUP BY country_name
+ORDER BY count(match_no) DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the countries from where the referees managed most of the matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name,
+       count(match_no)
+FROM match_mast a
+JOIN referee_mast c ON a.referee_id=c.referee_id
+JOIN soccer_country b ON c.country_id=b.country_id
+GROUP BY country_name
+HAVING count(match_no)=
+  (SELECT max(mm)
+   FROM
+     (SELECT count(match_no) mm
+      FROM match_mast a
+      JOIN referee_mast c ON a.referee_id=c.referee_id
+      JOIN soccer_country b ON c.country_id=b.country_id
+      GROUP BY country_name) hh);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the referees managed the number of matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT c.referee_name,
+       b.country_name,
+       count(a.match_no)
+FROM match_mast a
+JOIN referee_mast c ON a.referee_id=c.referee_id
+JOIN soccer_country b ON c.country_id=b.country_id
+GROUP BY c.referee_name,
+         b.country_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find those referees who managed most of the match
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT c.referee_name,
+       b.country_name,
+       count(a.match_no)
+FROM match_mast a
+JOIN referee_mast c ON a.referee_id=c.referee_id
+JOIN soccer_country b ON c.country_id=b.country_id
+GROUP BY c.referee_name,
+         b.country_name
+HAVING count(a.match_no) =
+  (SELECT max(mm)
+   FROM
+     (SELECT count(a.match_no) mm
+      FROM match_mast a
+      JOIN referee_mast c ON a.referee_id=c.referee_id
+      JOIN soccer_country b ON c.country_id=b.country_id
+      GROUP BY c.referee_name,
+               b.country_name) hh);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the referees managed the number of matches in each venue
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT c.referee_name,
+       b.country_name,
+       d.venue_name,
+       count(a.match_no)
+FROM match_mast a
+JOIN referee_mast c ON a.referee_id=c.referee_id
+JOIN soccer_country b ON c.country_id=b.country_id
+JOIN soccer_venue d ON a.venue_id=d.venue_id
+GROUP BY c.referee_name,
+         country_name,
+         venue_name
+ORDER BY referee_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the referees and number of booked he made
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT c.referee_name,
+       count(b.match_no)
+FROM player_booked a
+JOIN match_mast b ON a.match_no=b.match_no
+JOIN referee_mast c ON b.referee_id=c.referee_id
+GROUP BY referee_name
+ORDER BY count(b.match_no) DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the referees who booked most number of players
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT c.referee_name,
+       count(b.match_no)
+FROM player_booked a
+JOIN match_mast b ON a.match_no=b.match_no
+JOIN referee_mast c ON b.referee_id=c.referee_id
+GROUP BY referee_name
+HAVING count(b.match_no)=
+  (SELECT max(mm)
+   FROM
+     (SELECT count(b.match_no) mm
+      FROM player_booked a
+      JOIN match_mast b ON a.match_no=b.match_no
+      JOIN referee_mast c ON b.referee_id=c.referee_id
+      GROUP BY referee_name) hh);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the player of each team who wear jersey number 10
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name,
+       player_name,
+       posi_to_play,
+       age,
+       playing_club
+FROM player_mast a
+JOIN soccer_country b ON a.team_id=b.country_id
+WHERE jersey_no=10
+ORDER BY country_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the defender who scored goal for his team
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT player_name,
+       jersey_no,
+       country_name,
+       age,
+       playing_club
+FROM goal_details a
+JOIN player_mast b ON a.player_id=b.player_id
+JOIN soccer_country c ON a.team_id=c.country_id
+WHERE posi_to_play='DF'
+ORDER BY player_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the position of a player to play who scored own goal
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT player_name,
+       jersey_no,
+       country_name,
+       age,
+       posi_to_play,
+       playing_club
+FROM goal_details a
+JOIN player_mast b ON a.player_id=b.player_id
+JOIN soccer_country c ON a.team_id=c.country_id
+WHERE goal_type='O'
+ORDER BY player_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the results of penalty shootout matches
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT match_no,
+       play_stage,
+       country_name,
+       penalty_score
+FROM match_details a
+JOIN soccer_country b ON a.team_id=b.country_id
+WHERE decided_by='P'
+ORDER BY match_no;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the goal scored by the players according to their playing position
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name,
+       posi_to_play,
+       count(*) AS "Number of goals"
+FROM goal_details a
+JOIN player_mast b ON a.player_id=b.player_id
+JOIN soccer_country c ON a.team_id=c.country_id
+GROUP BY country_name,
+         posi_to_play
+ORDER BY country_name;
+
