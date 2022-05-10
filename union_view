@@ -1,0 +1,321 @@
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all salesmen and customer located in London
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT salesman_id "ID", name, 'Salesman'
+FROM salesman
+WHERE city='London'
+UNION
+(SELECT customer_id "ID", cust_name, 'Customer'
+FROM customer
+WHERE city='London')
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display distinct salesman and their cities
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT salesman_id, city
+FROM customer
+UNION
+(SELECT salesman_id, city
+FROM salesman)
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the salesmen and customer involved in this inventory management system
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT salesman_id, customer_id
+FROM customer
+UNION 
+(SELECT salesman_id, customer_id
+FROM orders)
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Make a report of which salesman produce the largest and smallest orders on each date
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.salesman_id, name, ord_no, 'highest on', ord_date
+FROM salesman a, orders b
+WHERE a.salesman_id =b.salesman_id
+AND b.purch_amt=
+	(SELECT MAX (purch_amt)
+	FROM orders c
+	WHERE c.ord_date = b.ord_date)
+UNION
+(SELECT a.salesman_id, name, ord_no, 'lowest on', ord_date
+FROM salesman a, orders b
+WHERE a.salesman_id =b.salesman_id
+AND b.purch_amt=
+	(SELECT MIN (purch_amt)
+	FROM orders c
+	WHERE c.ord_date = b.ord_date))
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Make a report of which salesman produce the largest and smallest orders on each date and arranged the order number in smallest to the largest number
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.salesman_id, name, ord_no, 'highest on', ord_date
+FROM salesman a, orders b
+WHERE a.salesman_id =b.salesman_id
+AND b.purch_amt=
+	(SELECT MAX (purch_amt)
+	FROM orders c
+	WHERE c.ord_date = b.ord_date)
+UNION
+(SELECT a.salesman_id, name, ord_no, 'lowest on', ord_date
+FROM salesman a, orders b
+WHERE a.salesman_id =b.salesman_id
+AND b.purch_amt=
+	(SELECT MIN (purch_amt)
+	FROM orders c
+	WHERE c.ord_date = b.ord_date))
+ORDER BY 3
+
+
+-------------------------------------------------------------------------------------------------------------------------
+List all the salesmen, and indicate those who do not have customers in their cities, as well as whose who do
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT salesman.salesman_id, name, cust_name, commission
+FROM salesman, customer
+WHERE salesman.city = customer.city
+UNION
+(SELECT salesman_id, name, 'NO MATCH', commission
+FROM salesman
+WHERE NOT city = ANY
+	(SELECT city
+        FROM customer))
+ORDER BY 2 DESC
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Appends strings to the selected fields, indicating whether or not a specified city of any salesman was matched to the city of any customer
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.salesman_id, name, a.city, 'MATCHED'
+FROM salesman a, customer b
+WHERE a.city = b.city
+UNION
+(SELECT salesman_id, name, city, 'NO MATCH'
+FROM salesman
+WHERE NOT city = ANY
+	(SELECT city
+        FROM customer))
+ORDER BY 2 DESC
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a union of two queries that shows the names, cities, and ratings of all customers with a comment string
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT customer_id, city, grade, 'High Rating'
+FROM customer
+WHERE grade >= 300
+UNION
+(SELECT customer_id, city, grade, 'Low Rating'
+FROM customer
+WHERE grade < 300)
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Produces the name and number of each salesman and each customer with more than one current order
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT customer_id as “ID”,  cust_name as “NAME”
+	FROM customer a
+	WHERE 1<
+		(SELECT COUNT (*)
+		   FROM orders b
+		   WHERE a.customer_id = b.customer_id)
+UNION
+(SELECT salesman_idas “ID”,   nameas “NAME”
+	FROM salesman a
+	WHERE 1 <
+		(SELECT COUNT (*)
+		 FROM orders b
+		WHERE  a.salesman_id = b.salesman_id))
+ORDER BY 2
+
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a view for the salesmen who belongs to the city New York
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW newyorkstaff
+AS SELECT *
+FROM salesman
+WHERE city = 'New York';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a view for all the salesmen with columns salesman_id, name and city
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW salesown
+ AS SELECT salesman_id, name, city
+ FROM salesman;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a view to find the salesmen of the city New York
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW newyorkstaff
+AS SELECT *
+FROM salesman
+WHERE city = 'New York';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a view to get a count of how many customers we have at each level of grade
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW gradecount (grade, number)
+AS SELECT grade, COUNT(*)
+FROM customer
+GROUP BY grade;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a view to keeping track the number of customers ordering number of salesmen attached, average amount of orders and the total amount of orders in a day
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW totalforday
+ AS SELECT ord_date, COUNT(DISTINCT customer_id),
+ AVG(purch_amt), SUM(purch_amt)
+ FROM orders
+ GROUP BY ord_date;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Define a view that shows for each order the salesman and customer by name
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW nameorders
+AS SELECT ord_no, purch_amt, a.salesman_id, name, cust_name
+FROM orders a, customer b, salesman c
+WHERE a.customer_id = b.customer_id
+AND a.salesman_id = c.salesman_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Define a view that find the salesman who has the customer with the highest order of a day
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW elitsalesman
+AS SELECT b.ord_date, a.salesman_id, a.name
+FROM salesman a, orders b
+WHERE a.salesman_id = b.salesman_id
+AND b.purch_amt =
+    (SELECT MAX (purch_amt)
+       FROM orders c
+       WHERE c.ord_date = b.ord_date);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Define a view that finds the salesman who has the customer with the highest order at least 3 times on a day
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW incentive
+AS SELECT DISTINCT salesman_id, name
+FROM elitsalesman a
+WHERE 3 <=
+   (SELECT COUNT (*)
+    FROM elitsalesman b
+    WHERE a.salesman_id = b.salesman_id);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a view that shows all of the customers who have the highest grade
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW highgrade
+  AS SELECT *
+  FROM customer
+  WHERE grade =
+    (SELECT MAX (grade)
+     FROM customer);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a view that shows the number of the salesman in each city
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW citynum
+AS SELECT city, COUNT (DISTINCT salesman_id)
+FROM salesman
+GROUP BY city;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a view that shows the average and total orders for each salesman after his or her name
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW norders
+AS SELECT name, AVG(purch_amt), SUM(purch_amt)
+FROM salesman, orders
+WHERE salesman.salesman_id = orders.salesman_id
+GROUP BY name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a view that shows each salesman with more than one customers
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW mcustomer
+AS SELECT *
+FROM salesman a
+WHERE 1 <
+   (SELECT COUNT(*)
+     FROM customer b
+     WHERE a.salesman_id = b.salesman_id);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a view that shows all matches of customers with salesmen
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW citymatch(custcity, salescity)
+AS SELECT DISTINCT a.city, b.city
+FROM customer a, salesman b
+WHERE a.salesman_id = b.salesman_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Define a view that shows the number of orders in each day
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW dateord(ord_date, odcount)
+AS SELECT ord_date, COUNT (*)
+FROM orders 
+GROUP BY ord_date;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a view that shows the salesmen who issued orders on October 10th, 2012
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW salesmanonoct
+AS SELECT *
+FROM salesman
+WHERE salesman_id IN
+    (SELECT salesman_id
+         FROM orders
+         WHERE ord_date = '2012-10-10');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Create a view that shows the salesmen who issued orders on either August 17th, 2012 or October 10th, 2012
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE VIEW sorder
+AS SELECT salesman_id, ord_no, customer_id
+FROM orders
+WHERE ord_dateIN('2012-08-17', '2012-10-10');
+
