@@ -1,0 +1,2217 @@
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the full name, and salary for those employees who earn below 6000
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name ||' '||last_name AS Full_Name, salary
+  FROM employees
+    WHERE salary < 6000;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last_name, department number and salary for those employees who earn more than 8000
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name,last_name, department_id, salary
+ FROM employees
+  WHERE salary > 8000;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, and department number for all employees whose last name is "McEwen"
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, department_id
+ FROM employees
+  WHERE last_name = 'McEwen';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the information for all employees without any department number
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+ FROM employees
+  WHERE department_id IS NULL;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the information about the department Marketing
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+ FROM  departments
+  WHERE department_name = 'Marketing';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display some information for employees whose first name does not containing the letter M and make the result set in ascending order by department number
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name || ' ' || last_name as Full_Name, hire_date,  
+ salary,  department_id
+  FROM employees
+   WHERE first_name NOT LIKE '%M%'
+     ORDER BY department_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find those employees 1. whose salary is in the range of 8000, 12000 (Begin and end values are included.) and get some commission. or 2. Those employees who joined before ‘2003-06-05’ and not included in the department number 40, 120 and 70
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+ FROM employees
+  WHERE salary BETWEEN 8000 AND 12000 
+      AND commission_pct IS NOT NULL
+       OR  department_id NOT IN (40 , 120 , 70)
+          AND   hire_date < '2003-06-05'
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the full name, and salary for all employees who does not earn any commission
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name ||' '||last_name AS Full_Name, salary
+ FROM  employees
+  WHERE commission_pct IS NULL;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Write a query in SQL to display the full name, phone number with email jointly, and salary, for employees whose salary is within 9000 and 17000
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name ||' '||last_name AS Full_Name,
+       phone_number ||' - '|| email AS Contact_Details,
+       salary  AS Remuneration
+         FROM employees
+           WHERE salary BETWEEN 9000 AND 17000;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, and salary for those employees whose first name is ending with the letter m
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, salary
+ FROM employees
+  WHERE first_name LIKE '%m';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the full name, and salary, for all employees whose salary is out of the range 7000 and 15000 and arranged the full name in ascending order
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name || ' ' || last_name as Name, salary
+ FROM  employees
+   WHERE salary NOT BETWEEN 7000 AND 15000
+     ORDER BY first_name || ' ' || last_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the full name, job id and date of hire for those employees who was hired during November 5th, 2007 and July 5th, 2009
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name ||' '||last_name AS Full_Name, 
+  job_id, hire_date 
+   FROM employees 
+    WHERE hire_date 
+     BETWEEN '2007-11-05' AND '2009-07-05';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the the full name, and department number for those employees who works either in department 70 or 90
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name ||' '|| last_name AS Full_Name, department_id
+  FROM employees
+   WHERE department_id = 70 
+     OR department_id = 90;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the full name, salary, and manager number for those employees who is working under a manager
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name ||' '||last_name AS Full_Name, salary, manager_id
+   FROM employees
+     WHERE manager_id IS NOT NULL;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the information of employees hired before June 21st, 2002
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+ FROM employees
+  WHERE hire_date < '2002-06-21';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, email, salary and manager ID of employees whose managers are hold the ID 120, 103 or 145
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, email, 
+  salary, manager_id
+    FROM employees
+     WHERE manager_id IN (120 , 103 , 145);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the information of all employees who have the letters D, S, or N in their first name and arrange the result in descending order by salary
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+ FROM employees
+  WHERE first_name LIKE '%D%'
+   OR first_name LIKE '%S%'
+   OR first_name LIKE '%N%'
+    ORDER BY salary DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display informations for the employees who earn above 11000 or the seventh character in their phone number is 3 and arranged the result descendingly by the first name
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name ||' '||last_name AS Full_Name, hire_date , 
+  commission_pct, email ||' -  '||phone_number AS Contact_Details, salary 
+     FROM employees 
+       WHERE salary > 11000
+        OR phone_number LIKE '______3%'
+          ORDER BY first_name DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, department number for those employees who holds a letter s as a 3rd character in their first name
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name,last_name, department_id
+ FROM employees
+  WHERE first_name LIKE '__s%';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee ID, first name, job id, and department number for those employees who is working except the departments 50,30 and 80
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT employee_id, first_name, job_id, department_id
+ FROM employees
+  WHERE department_id NOT IN (50, 30, 80);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee Id, first name, job id, and department number for those employees whose department number equals 30, 40 or 90
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT employee_id, first_name, job_id, department_id
+ FROM employees
+  WHERE department_id IN (30 , 40 , 90);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the ID for those employees who did two or more jobs in the past
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT employee_id 
+	FROM job_history 
+		GROUP BY employee_id 
+			HAVING COUNT(*) >=2;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display job ID, number of employees, sum of salary, and difference between highest and lowest salary for a job
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT job_id, COUNT(*), SUM(salary), 
+	MAX(salary)-MIN(salary) AS salary_difference 
+		FROM employees 
+			GROUP BY job_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display job ID for those jobs that were done by two or more for more than 300 days
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT job_id 
+	FROM job_history 
+		WHERE end_date-start_date >300 
+			GROUP BY job_id 
+				HAVING COUNT(*)>=2;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the country ID and number of cities in that country we have
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_id,  COUNT(*)  
+	FROM locations 
+		GROUP BY country_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the manager ID and number of employees managed by the manager
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT manager_id, COUNT(*) 
+	FROM employees 
+		GROUP BY manager_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the details of jobs in descending sequence on job title
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+	FROM jobs 
+		ORDER BY job_title DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name and date of joining of the employees who is either Sales Representative or Sales Man
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, hire_date
+	FROM employees 
+		WHERE job_id IN ('SA_REP', 'SA_MAN');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the average salary of employees for each department who gets a commission percentage
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT department_id, AVG(salary) 
+	FROM employees 
+		WHERE commission_pct IS NOT NULL 
+			GROUP BY department_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display those departments where any manager is managing 4 or more employees
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT DISTINCT department_id
+	FROM employees
+		GROUP BY department_id, manager_id 
+			HAVING COUNT(employee_id) >=4;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display those departments where more than ten employees work who got a commission percentage
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT department_id 
+	FROM employees 
+		WHERE commission_pct IS NOT NULL
+			GROUP BY department_id 
+				HAVING COUNT(commission_pct)>10;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee ID and the date on which he ended his previous job
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT employee_id , MAX(end_date)
+FROM job_history
+WHERE employee_id IN (SELECT employee_id
+FROM job_history
+GROUP BY 1
+HAVING COUNT(employee_id) > 1)
+GROUP BY 1
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the details of the employees who have no commission percentage and salary between 7000 to 12000 and works in department 50
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+	FROM employees 
+		WHERE commission_pct IS NULL 
+			AND salary BETWEEN 7000 AND 12000 
+				AND department_id=50;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the job ID for those jobs which average salary is above 8000
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT job_id, AVG(salary) 
+     FROM employees 
+         GROUP BY job_id 
+               HAVING AVG(salary)>8000;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display job Title, the difference of minimum and maximum salaries for those jobs which max salary between 12000 to 18000
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT job_title, max_salary-min_salary AS salary_differences 
+	FROM jobs 
+		WHERE max_salary BETWEEN 12000 AND 18000;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all those employees whose first name or last name starts with the letter D
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name 
+	FROM employees 
+		WHERE  first_name  LIKE 'D%' 
+			OR last_name LIKE 'D%';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the details of jobs which minimum salary is greater than 9000
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+ FROM jobs 
+  WHERE min_salary > 9000;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display those employees who joined after 7th September, 1987
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+ FROM employees  
+   WHERE hire_date > '1987-09-07';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the salesmen and customers with their name and cities, who belongs to the same city
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT salesman.name AS "Salesman",
+customer.cust_name, customer.city 
+FROM salesman,customer 
+WHERE salesman.city=customer.city;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Prepare a list with order no, purchase amount, customer name and their cities for those orders which order amount between 500 and 2000
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT  a.ord_no,a.purch_amt,
+b.cust_name,b.city 
+FROM orders a,customer b 
+WHERE a.customer_id=b.customer_id 
+AND a.purch_amt BETWEEN 500 AND 2000;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Prepare a list for which salesman are working for which customer along with city and commissions earned by the salesman
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.cust_name AS "Customer Name", 
+a.city, b.name AS "Salesman", b.commission 
+FROM customer a 
+INNER JOIN salesman b 
+ON a.salesman_id=b.salesman_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Make a list of customers who appointed a salesman for their jobs who gets a commission is above 12%
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.cust_name AS "Customer Name", 
+a.city, b.name AS "Salesman", b.commission 
+FROM customer a 
+INNER JOIN salesman b 
+ON a.salesman_id=b.salesman_id 
+WHERE b.commission>.12;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Make a list of customers who appointed a salesman for their jobs who does not live in the same city where their customer lives, and gets a commission is above 12%
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.cust_name AS "Customer Name", 
+a.city, b.name AS "Salesman", b.city,b.commission  
+FROM customer a  
+INNER JOIN salesman b  
+ON a.salesman_id=b.salesman_id 
+WHERE b.commission>.12 
+AND a.city<>b.city;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the details of a order i.e. order number, order date, amount of order, customer and salesman name and commission of the salesman for an order
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.ord_no,a.ord_date,a.purch_amt,
+b.cust_name AS "Customer Name", b.grade, 
+c.name AS "Salesman", c.commission 
+FROM orders a 
+INNER JOIN customer b 
+ON a.customer_id=b.customer_id 
+INNER JOIN salesman c 
+ON a.salesman_id=c.salesman_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Make a join on the tables salesman, customer and orders in such a form that the same column of each table will appear once and only the relational rows will come
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM orders 
+NATURAL JOIN customer  
+NATURAL JOIN salesman;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Make a list in ascending order for the customer who works either through a salesman or by own
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.cust_name,a.city,a.grade, 
+b.name AS "Salesman",b.city 
+FROM customer a 
+LEFT JOIN salesman b 
+ON a.salesman_id=b.salesman_id 
+order by a.customer_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Make a list in ascending order for all customers who holds a grade less than 300 and works either through a salesman or by own
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.cust_name,a.city,a.grade, 
+b.name AS "Salesman", b.city 
+FROM customer a 
+LEFT OUTER JOIN salesman b 
+ON a.salesman_id=b.salesman_id 
+WHERE a.grade<300 
+ORDER BY a.customer_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Make a report with customer name, city, order number, date, and amount in ascending order on order date to find either any of the existing customer have placed no order or placed one or more orders
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.cust_name,a.city, b.ord_no,
+b.ord_date,b.purch_amt AS "Order Amount" 
+FROM customer a 
+LEFT OUTER JOIN orders b 
+ON a.customer_id=b.customer_id 
+order by b.ord_date;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Make a report with customer name, city, order number, date, amount salesman name and commission to find either any of the existing customers have placed no order or placed one or more orders by their salesman or by own
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.cust_name,a.city, b.ord_no,
+b.ord_date,b.purch_amt AS "Order Amount", 
+c.name,c.commission 
+FROM customer a 
+LEFT OUTER JOIN orders b 
+ON a.customer_id=b.customer_id 
+LEFT OUTER JOIN salesman c 
+ON c.salesman_id=b.salesman_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Prepare a list in ascending order for the salesmen who works either for one or more customer or not yet join under any of the customers
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.cust_name,a.city,a.grade, 
+b.name AS "Salesman", b.city 
+FROM customer a 
+RIGHT OUTER JOIN salesman b 
+ON b.salesman_id=a.salesman_id 
+ORDER BY b.salesman_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the list for the salesmen who works either for one or more customer or not yet join under any of the customers who placed either one or more orders or no order to their supplier
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.cust_name,a.city,a.grade, 
+b.name AS "Salesman", 
+c.ord_no, c.ord_date, c.purch_amt 
+FROM customer a 
+RIGHT OUTER JOIN salesman b 
+ON b.salesman_id=a.salesman_id 
+RIGHT OUTER JOIN orders c 
+ON c.customer_id=a.customer_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Prepare a list for the salesmen who either work for one or more customers or yet to join any of the customers. The customer, may have placed, either one or more orders on or above order amount 2000 and must have a grade, or he may not have placed any order to the associated supplier
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.cust_name,a.city,a.grade, 
+b.name AS "Salesman", 
+c.ord_no, c.ord_date, c.purch_amt 
+FROM customer a 
+RIGHT OUTER JOIN salesman b 
+ON b.salesman_id=a.salesman_id 
+LEFT OUTER JOIN orders c 
+ON c.customer_id=a.customer_id 
+WHERE c.purch_amt>=2000 
+AND a.grade IS NOT NULL;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Make a report with customer name, city, order no., order date, purchase amount for those customers from the existing list who placed one or more orders or which order(s) have been placed by the customer who is not in the list
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.cust_name,a.city, b.ord_no,
+b.ord_date,b.purch_amt AS "Order Amount" 
+FROM customer a 
+LEFT OUTER JOIN orders b 
+ON a.customer_id=b.customer_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Make a report with customer name, city, order no. order date, purchase amount for only those customers on the list who must have a grade and placed one or more orders or which order(s) have been placed by the customer who is neither in the list nor have a grade
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.cust_name,a.city, b.ord_no,
+b.ord_date,b.purch_amt AS "Order Amount" 
+FROM customer a 
+FULL OUTER JOIN orders b 
+ON a.customer_id=b.customer_id 
+WHERE a.grade IS NOT NULL;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Prepare a cartesian product between salesman and customer i.e. each salesman will appear for all customer and vice versa
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM salesman a 
+CROSS JOIN customer b;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Prepare a cartesian product between salesman and customer i.e. each salesman will appear for all customer and vice versa for that salesman who belongs to a city
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM salesman a 
+CROSS JOIN customer b 
+WHERE a.city IS NOT NULL;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Prepare a cartesian product between salesman and customer i.e. each salesman will appear for all customer and vice versa for those salesmen who belongs to a city and the customers who must have a grade
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM salesman a 
+CROSS JOIN  customer b 
+WHERE a.city IS NOT NULL 
+AND b.grade IS NOT NULL;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Prepare a cartesian product between salesman and customer i.e. each salesman will appear for all customer and vice versa for those salesmen who must belong a city which is not the same as his customer and the customers should have an own grade
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM salesman a 
+CROSS JOIN customer b 
+WHERE a.city IS NOT NULL 
+AND b.grade IS NOT NULL 
+AND  a.city<>b.city;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the data from the item_mast, including all the data for each item's producer company
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+   FROM item_mast 
+   INNER JOIN company_mast
+   ON item_mast.pro_com= company_mast.com_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the item name, price, and company name of all the products
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT item_mast.pro_name, pro_price, company_mast.com_name
+   FROM item_mast 
+     INNER JOIN company_mast
+        ON item_mast.pro_com = company_mast.com_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the average price of items of each company, showing the name of the company
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT AVG(pro_price), company_mast.com_name
+   FROM item_mast INNER 
+     JOIN company_mast
+        ON item_mast.pro_com= company_mast.com_id
+           GROUP BY company_mast.com_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the names of the company whose products have an average price larger than or equal to Rs.350
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT AVG(pro_price), company_mast.com_name
+   FROM item_mast INNER JOIN company_mast
+   ON item_mast.pro_com= company_mast.com_id
+   GROUP BY company_mast.com_name
+   HAVING AVG(pro_price) >= 350;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the name of each company along with the ID and price for their most expensive product
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT A.pro_name, A.pro_price, F.com_name
+   FROM item_mast A INNER JOIN company_mast F
+   ON A.pro_com = F.com_id
+     AND A.pro_price =
+     (
+       SELECT MAX(A.pro_price)
+         FROM item_mast A
+         WHERE A.pro_com = F.com_id
+     );
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the data of employees including their department
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT emp_idno, A.emp_fname AS "First Name", emp_lname AS "Last Name",
+    B.dpt_name AS "Department", emp_dept, dpt_code,  dpt_allotment
+     FROM emp_details A 
+      INNER JOIN emp_department B
+        ON A.emp_dept = B.dpt_code;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first name and last name of each employee, along with the name and sanction amount for their department
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT emp_details.emp_fname AS "First Name", emp_lname AS "Last Name", 
+    emp_department.dpt_name AS "Department", 
+     dpt_allotment AS "Amount Allotted"
+       FROM emp_details 
+         INNER JOIN emp_department
+           ON emp_details.emp_dept = emp_department.dpt_code;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the first name and last name of employees working for departments with a budget more than Rs. 50000
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT emp_details.emp_fname AS "First Name", emp_lname AS "Last Name"
+  FROM emp_details 
+    INNER JOIN emp_department
+        ON emp_details.emp_dept = emp_department.dpt_code
+    AND emp_department.dpt_allotment > 50000;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the names of departments where more than two employees are working
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT emp_department.dpt_name
+  FROM emp_details 
+     INNER JOIN emp_department
+       ON emp_dept =dpt_code
+        GROUP BY emp_department.dpt_name
+          HAVING COUNT(*) > 2;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first name, last name, department number, and department name for each employee
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT E.first_name , E.last_name , 
+       E.department_id , D.department_name 
+        FROM employees E 
+         JOIN departments D 
+          ON E.department_id = D.department_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, department, city, and state province for each employee
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT E.first_name,E.last_name, 
+   D.department_name, L.city, L.state_province
+     FROM employees E 
+      JOIN departments D  
+        ON E.department_id = D.department_id  
+          JOIN locations L
+           ON D.location_id = L.location_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first name, last name, salary, and job grade for all employees
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT E.first_name, E.last_name, E.salary, J.grade_level
+ FROM employees E 
+   JOIN job_grades J
+     ON E.salary BETWEEN J.lowest_sal AND J.highest_sal;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first name, last name, department number and department name, for all employees for departments 80 or 40
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT E.first_name , E.last_name , 
+       E.department_id ,  D.department_name 
+         FROM employees E 
+         JOIN departments D 
+          ON E.department_id = D.department_id 
+          AND E.department_id IN (80 , 40)
+           ORDER BY E.last_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display those employees who contain a letter z to their first name and also display their last name, department, city, and state province
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT E.first_name,E.last_name,
+   D.department_name, L.city, L.state_province
+     FROM employees E 
+      JOIN departments D  
+       ON E.department_id = D.department_id 
+        JOIN locations L 
+         ON D.location_id = L.location_id 
+           WHERE E.first_name LIKE  '%z%';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all departments including those where does not have any employee
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT E.first_name, E.last_name, D.department_id, D.department_name 
+ FROM employees E 
+   RIGHT OUTER JOIN departments D
+     ON E.department_id = D.department_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name and salary for those employees who earn less than the employee earn whose number is 182
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT E.first_name, E.last_name, E.salary 
+  FROM employees E 
+   JOIN employees S
+     ON E.salary < S.salary 
+      AND S.employee_id = 182;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first name of all employees including the first name of their manager
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT E.first_name AS "Employee Name", 
+   M.first_name AS "Manager"
+     FROM employees E 
+       JOIN employees M
+         ON E.manager_id = M.employee_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the department name, city, and state province for each department
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT D.department_name , L.city , L.state_province
+  FROM  departments D 
+    JOIN locations L 
+      ON  D.location_id = L.location_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first name, last name, department number and name, for all employees who have or have not any department
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT E.first_name, E.last_name, E.department_id, D.department_name 
+  FROM employees E 
+   LEFT OUTER JOIN departments D 
+     ON E.department_id = D.department_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first name of all employees and the first name of their manager including those who does not working under any manager
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT E.first_name AS "Employee Name",
+   M.first_name AS "Manager"
+    FROM employees E 
+      LEFT OUTER JOIN employees M
+       ON E.manager_id = M.employee_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first name, last name, and department number for those employees who works in the same department as the employee who holds the last name as Taylor
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT E.first_name, E.last_name, E.department_id 
+ FROM employees E 
+   JOIN employees S
+     ON E.department_id = S.department_id
+       AND S.last_name = 'Taylor';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+HR
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT job_title, department_name, first_name || ' ' || last_name AS Employee_name, start_date 
+	FROM job_history 
+		JOIN jobs USING (job_id) 
+			JOIN departments USING (department_id) 
+				JOIN  employees USING (employee_id) 
+					WHERE start_date>='1993-01-01' AND start_date<='1997-08-31';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the job title, full name of employee, and the difference between maximum salary for the job and salary of the employee
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT job_title, first_name || ' ' || last_name AS Employee_name, 
+	max_salary-salary AS salary_difference 
+	FROM employees 
+		NATURAL JOIN jobs;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the name of the department, average salary and number of employees working in that department who got commission
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT department_name, AVG(salary), COUNT(commission_pct) 
+	FROM departments 
+		JOIN employees USING (department_id) 
+GROUP BY department_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the full name, job title and salary differences of those employees who is working in the department ID 80
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT job_title, first_name || ' ' || last_name AS Employee_name, 
+	max_salary-salary AS salary_difference
+	FROM employees 
+		NATURAL JOIN jobs 
+			WHERE department_id  = 80;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the name of the country, city, and the departments which are running there
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name,city, department_name 
+	FROM countries 
+		JOIN locations USING (country_id) 
+			JOIN departments USING (location_id);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the department name and the full name of the manager
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT department_name, first_name || ' ' || last_name AS name_of_manager
+	FROM departments D 
+		JOIN employees E 
+			ON (D.manager_id=E.employee_id);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the job title and average salary of employees
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT job_title, AVG(salary) 
+	FROM employees 
+		NATURAL JOIN jobs 
+			GROUP BY job_title;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the details of jobs which was done by any of the employees who is presently earning a salary on and above 12000
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.*
+	FROM  job_history a 
+		JOIN employees m 
+			ON (a.employee_id = m.employee_id)
+WHERE salary >= 12000;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the country name, city, and number of those departments where at least 2 employees are working
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT country_name,city, COUNT(department_id)
+	FROM countries 
+		JOIN locations USING (country_id) 
+		JOIN departments USING (location_id) 
+WHERE department_id IN 
+    (SELECT department_id 
+		FROM employees 
+	 GROUP BY department_id 
+	 HAVING COUNT(department_id)>=2)
+GROUP BY country_name,city;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the department name, full name of manager, and their city
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT department_name, first_name || ' ' || last_name AS name_of_manager, city 
+	FROM departments D 
+		JOIN employees E 
+			ON (D.manager_id=E.employee_id) 
+				JOIN locations L USING (location_id);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee ID, job name, number of days worked in for all those jobs in department 80
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT employee_id, job_title, end_date-start_date DAYS 
+	FROM job_history 
+		NATURAL JOIN jobs 
+			WHERE department_id=80;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the full name, and salary of those employees who working in any department located in London
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name || ' ' || last_name AS Employee_name, salary
+	FROM employees 
+		JOIN departments USING (department_id) 
+		JOIN  locations USING (location_id) 
+	WHERE  city = 'London';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display full name, job title, starting and ending date of last jobs for those employees worked without a commission percentage
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT CONCAT(e.first_name, ' ', e.last_name) AS Employee_name,
+       j.job_title,
+       h.*
+FROM employees e
+JOIN
+  (SELECT MAX(start_date),
+          MAX(end_date),
+          employee_id
+   FROM job_history
+   GROUP BY employee_id) h ON e.employee_id=h.employee_id
+JOIN jobs j ON j.job_id=e.job_id
+WHERE e.commission_pct = 0;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the department name, department ID, and number of employees in each of the department
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT d.department_name,
+       e.*
+FROM departments d
+JOIN
+  (SELECT count(employee_id),
+          department_id
+   FROM employees
+   GROUP BY department_id) e USING (department_id);;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the full name of employee with ID and present country where (s)he is working
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name || ' ' || last_name 
+AS Employee_name, employee_id, country_name 
+FROM employees 
+JOIN departments 
+USING(department_id) 
+JOIN locations 
+USING( location_id) 
+JOIN countries 
+USING ( country_id);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the orders from the orders table issued by the salesman 'Paul Adam'.
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM orders
+WHERE salesman_id =
+    (SELECT salesman_id 
+     FROM salesman 
+     WHERE name='Paul Adam');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the orders for the salesman who belongs to the city London
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM orders
+WHERE salesman_id IN
+    (SELECT salesman_id 
+     FROM salesman 
+     WHERE city='London');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find all the orders issued against the salesman who works for the customer whose id is 3007
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM orders
+WHERE salesman_id =
+    (SELECT DISTINCT salesman_id 
+     FROM orders 
+     WHERE customer_id =3007);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the orders which values are greater than the average order value for 10th October 2012
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM orders
+WHERE purch_amt >
+    (SELECT  AVG(purch_amt) 
+     FROM orders 
+     WHERE ord_date ='10/10/2012');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find all orders attributed to a salesman in New York
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM orders
+WHERE salesman_id IN
+    (SELECT salesman_id 
+     FROM salesman 
+     WHERE city ='New York');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the commission of all the salesmen servicing customers in Paris
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT commission
+FROM salesman
+WHERE salesman_id IN
+    (SELECT salesman_id 
+     FROM customer
+     WHERE city = 'Paris');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the customer whose id is 2001 bellow the salesman ID of Mc Lyon
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM customer
+WHERE customer_id =
+    (SELECT salesman_id -2001
+     FROM salesman
+     WHERE name = 'Mc Lyon');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Counts the customers with grades above New York's average
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT grade, COUNT (*)
+FROM customer
+GROUP BY grade
+HAVING grade >
+    (SELECT AVG(grade)
+     FROM customer
+     WHERE city = 'New York');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Write a query to extract the data from the orders table for those salesman who earned the maximum commission.
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT ord_no, purch_amt, ord_date, salesman_id 
+FROM orders 
+WHERE salesman_id IN(
+SELECT salesman_id 
+FROM salesman
+WHERE commission = (
+SELECT MAX(commission) 
+FROM salesman));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the customers with orders issued on date 17th August, 2012
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT b.*, a.cust_name
+FROM orders b, customer a
+WHERE a.customer_id=b.customer_id
+AND b.ord_date='2012-08-17';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the names and numbers of all salesmen who had more than one customer
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT salesman_id,name 
+FROM salesman a 
+WHERE 1 < 
+    (SELECT COUNT(*) 
+     FROM customer 
+     WHERE salesman_id=a.salesman_id);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find all orders with order amounts which is above the average amount of the related customer
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM orders a
+WHERE purch_amt >
+    (SELECT AVG(purch_amt) FROM orders b 
+     WHERE b.customer_id = a.customer_id);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find all orders with order amounts which are on or above-average amounts for their customers
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM orders a
+WHERE purch_amt >=
+    (SELECT AVG(purch_amt) FROM orders b 
+     WHERE b.customer_id = a.customer_id);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the sums of the order amounts, grouped by date, eliminating all those dates where the sum was not at least 1000.00 above the MAX amount for that date
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT ord_date, SUM (purch_amt)
+FROM orders a
+GROUP BY ord_date
+HAVING SUM (purch_amt) >
+    (SELECT 1000.00 + MAX(purch_amt) 
+     FROM orders b 
+     WHERE a.ord_date = b.ord_date);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Extract all data from the customer table if and only if one or more of the customers in the customer table are located in London.
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT customer_id,cust_name, city
+FROM customer
+WHERE EXISTS
+   (SELECT *
+    FROM customer 
+    WHERE city='London');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the salesmen who have multiple customers
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM salesman 
+WHERE salesman_id IN (
+   SELECT DISTINCT salesman_id 
+   FROM customer a 
+   WHERE EXISTS (
+      SELECT * 
+      FROM customer b 
+      WHERE b.salesman_id=a.salesman_id 
+      AND b.cust_name<>a.cust_name));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find all the salesmen worked for only one customer
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM salesman 
+WHERE salesman_id IN (
+   SELECT DISTINCT salesman_id 
+   FROM customer a 
+   WHERE NOT EXISTS (
+      SELECT * FROM customer b 
+      WHERE a.salesman_id=b.salesman_id 
+      AND a.cust_name<>b.cust_name));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the rows of all salesmen who have customers with more than one orders
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM salesman a 
+WHERE EXISTS     
+   (SELECT * FROM customer b     
+    WHERE a.salesman_id=b.salesman_id     
+	 AND 1<             
+	     (SELECT COUNT (*)              
+		  FROM orders             
+		  WHERE orders.customer_id =            
+		  b.customer_id));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find salesmen with all information who lives in the city where any of the customers lives
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM salesman 
+WHERE city=ANY
+    (SELECT city
+     FROM customer);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the salesmen for whom there are customers that follow them
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM salesman 
+WHERE city IN
+    (SELECT city
+     FROM customer);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the salesmen which name are alphabetically lower than the name of the customers
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM salesman a
+WHERE EXISTS
+   (SELECT *
+	FROM CUSTOMER b
+	WHERE  a.name  < b.cust_name);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the customers who have a greater gradation than any customer who belongs to the alphabetically lower than the city New York
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM customer
+WHERE grade > ANY
+   (SELECT grade
+	FROM CUSTOMER
+	WHERE  city < 'New York');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the orders that had amounts that were greater than at least one of the orders on September 10th 2012
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM Orders
+WHERE purch_amt > ANY
+   (SELECT purch_amt
+	FROM orders
+	WHERE  ord_date='2012/09/10');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Write a query to find all orders with an amount smaller than any amount for a customer in London. Use ANY keyword.
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM orders
+WHERE purch_amt < ANY
+   (SELECT purch_amt
+	FROM orders a, customer b
+	WHERE  a.customer_id=b.customer_id
+	AND b.city='London');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all orders with an amount smaller than max amount for a customer in London. Use MAX keyword.
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM orders
+WHERE purch_amt < 
+   (SELECT MAX (purch_amt)
+	FROM orders a, customer b
+	WHERE  a.customer_id=b.customer_id
+	AND b.city='London');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display only those customers whose grade are, in fact, higher than every customer in New York
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM customer
+WHERE grade > ALL
+   (SELECT grade
+	FROM customer
+	WHERE city='New York');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+write a query in sql to find the name, city, and the total sum of orders amount a salesman collects.
+Salesman should belong to the cities where any of the customer belongs.
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT salesman.name, salesman.city, subquery1.total_amt FROM 
+salesman, (SELECT salesman_id, SUM(orders.purch_amt) AS total_amt 
+FROM orders GROUP BY salesman_id) subquery1 WHERE subquery1.salesman_id = salesman.salesman_id AND
+salesman.city IN (SELECT DISTINCT city FROM customer);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Get all information for those customers whose grade is not as grade of customer who belongs to the city London
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+SELECT * FROM customer WHERE grade <> ALL 
+(SELECT grade FROM customer WHERE city='London' AND NOT grade IS NULL);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find all those customers whose grade are not as the grade, belongs to the city Paris
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM customer 
+WHERE grade NOT IN
+   (SELECT grade
+	FROM customer
+	WHERE city='Paris');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find all those customers who hold a different grade than any customer of the city Dallas
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM customer 
+WHERE NOT grade = ANY
+   (SELECT grade
+	FROM customer
+	WHERE city='Dallas');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the average price of each manufacturer's products along with their name
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT AVG(pro_price) AS "Average Price", 
+   company_mast.com_name As "Company"
+   FROM item_mast, company_mast
+        WHERE item_mast.pro_com= company_mast.com_id
+           GROUP BY company_mast.com_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the average price of the products which is more than or equal to 350 along with their names
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT AVG(pro_price) AS "Average Price", 
+   company_mast.com_name AS "Company"
+      FROM item_mast, company_mast
+         WHERE item_mast.pro_com= company_mast.com_id
+           GROUP BY company_mast.com_name
+   HAVING AVG(pro_price) >= 350;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the name of each company, price for their most expensive product along with their Name
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT P.pro_name AS "Product Name", 
+       P.pro_price AS "Price", 
+       C.com_name AS "Company"
+   FROM item_mast P, company_mast C
+   WHERE P.pro_com = C.com_id
+     AND P.pro_price =
+     (
+       SELECT MAX(P.pro_price)
+         FROM item_mast P
+         WHERE P.pro_com = C.com_id
+     );
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find all the details of employees whose last name is Gabriel or Dosio
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+  FROM emp_details
+   WHERE emp_lname IN ('Gabriel' , 'Dosio');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the details of employees who works in department 89 or 63
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+  FROM emp_details
+  WHERE emp_dept IN (89,63);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first name and last name of employees working for the department which allotment amount is more than Rs.50000
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT emp_fname, emp_lname 
+ FROM emp_details
+  WHERE emp_dept IN
+  (SELECT dpt_code 
+     FROM emp_department 
+       WHERE dpt_allotment > 50000);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the departments which sanction amount is larger than the average sanction amount of all the departments
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+  FROM emp_department
+  WHERE dpt_allotment >
+  (
+    SELECT AVG(dpt_allotment)
+    FROM emp_department
+  );
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the names of departments with more than two employees are working
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT dpt_name FROM emp_department
+  WHERE dpt_code IN
+  (
+    SELECT emp_dept
+      FROM emp_details
+      GROUP BY emp_dept
+      HAVING COUNT(*) >2
+  );
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find the first name and last name of employees working for departments which sanction amount is second lowest
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT emp_fname, emp_lname 
+FROM emp_details 
+WHERE emp_dept IN (
+  SELECT dpt_code
+  FROM emp_department 
+  WHERE dpt_allotment= (
+    SELECT MIN(dpt_allotment)
+    FROM emp_department 
+    WHERE dpt_allotment >
+ (SELECT MIN(dpt_allotment) 
+      FROM emp_department )));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the name for those employees who gets more salary than the employee whose id is 163
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name 
+FROM employees 
+WHERE salary > 
+( SELECT salary  
+FROM employees 
+WHERE employee_id=163
+);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the name, salary, department id, job id for those employees who works in the same designation as the employee works whose id is 169
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, salary, department_id, job_id 
+FROM employees 
+WHERE job_id =  
+( SELECT job_id  
+FROM employees  
+WHERE employee_id=169
+);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the name, salary, department id for those employees who earn such amount of salary which is the smallest salary of any of the departments
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, salary, department_id  
+FROM employees  
+WHERE salary IN  
+( SELECT MIN(salary)  
+FROM employees  
+GROUP BY department_id 
+);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee id, employee name for all employees who earn more than the average salary
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT employee_id, first_name,last_name  
+FROM employees  
+WHERE salary >  
+( SELECT AVG(salary)  
+FROM employees 
+);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee name, employee id and salary of all employees who report to Payam
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, employee_id, salary  
+FROM employees  
+WHERE manager_id = 
+(SELECT employee_id  
+FROM employees  
+WHERE first_name = 'Payam' 
+);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the department number, name, job and department name for all employees in the Finance department
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT e.department_id, e.first_name, e.job_id , d.department_name  
+FROM employees e , departments d  
+WHERE e.department_id = d.department_id  
+AND  d.department_name = 'Finance';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the information of an employee whose salary and reporting person id is 3000 and 121 respectively
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM employees 
+WHERE (salary,manager_id)=
+(SELECT 3000,121);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the information of an employee whose id is any of the number 134, 159 and 183
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM employees 
+WHERE employee_id IN (134,159,183);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the information of the employees whose salary is within the range 1000 and 3000
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * FROM employees 
+WHERE salary BETWEEN 1000 and 3000;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the information of the employees whose salary if within the range of smallest salary and 2500
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM employees 
+WHERE salary BETWEEN  
+(SELECT MIN(salary) 
+FROM employees) AND 2500;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the information of the employees who does not work in those departments where some employees works whose manager id within the range 100 and 200
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM employees 
+WHERE department_id NOT IN 
+(SELECT department_id 
+FROM departments 
+WHERE manager_id BETWEEN 100 AND 200);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the information for those employees whose id is any id who earn the second highest salary
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM employees 
+WHERE employee_id IN 
+(SELECT employee_id 
+FROM employees  
+WHERE salary = 
+(SELECT MAX(salary) 
+FROM employees 
+WHERE salary < 
+(SELECT MAX(salary) 
+FROM employees)));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee name and hiredate for all employees in the same department as Clara. Exclude Clara
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, hire_date  
+FROM employees  
+WHERE department_id =  
+( SELECT department_id  
+FROM employees  
+WHERE first_name = 'Clara')  
+AND first_name <> 'Clara';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee ID and name of all employees who works in such a department where the employees are working whose name containing a letter 'T'
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT employee_id, first_name, last_name  
+FROM employees  
+WHERE department_id IN  
+( SELECT department_id  
+FROM employees  
+WHERE first_name LIKE '%T%' );
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee number, name, and salary for all employees who earn more than the average salary and who work in a department with any employee with a 'J' in their name
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT employee_id, first_name , salary  
+FROM employees  
+WHERE salary > 
+(SELECT AVG (salary)  
+FROM employees ) 
+AND  department_id IN 
+( SELECT department_id  
+FROM employees  
+WHERE first_name LIKE '%J%');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee name, employee id, and job title for all employees whose department location is Toronto
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT  first_name, last_name, employee_id, job_id  
+FROM employees  
+WHERE department_id = 
+(SELECT department_id  
+FROM departments 
+WHERE location_id = 
+(SELECT location_id 
+FROM locations  
+WHERE city ='Toronto'));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee number, name and job title for all employees whose salary is smaller than any salary of those employees whose job title is MK_MAN
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT employee_id,first_name,last_name,job_id  
+FROM employees 
+ WHERE salary < ANY 
+ ( SELECT salary  
+ FROM employees  
+ WHERE job_id = 'MK_MAN' );
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee number, name and job title for all employees whose salary is smaller than any salary of those employees whose job title is MK_MAN. Exclude Job title MK_MAN
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT employee_id,first_name,last_name, job_id 
+FROM employees 
+WHERE salary < ANY 
+( SELECT salary 
+FROM employees 
+WHERE job_id = 'MK_MAN' ) 
+AND job_id <> 'MK_MAN';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee number, name and job title for all employees whose salary is more than any salary of those employees whose job title is PU_MAN. Exclude job title PU_MAN
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT employee_id, first_name, last_name, job_id  
+FROM employees  
+WHERE salary > ALL  
+( SELECT salary  
+FROM employees  
+WHERE job_id = 'PU_MAN' )  
+AND job_id <> 'PU_MAN';
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee number, name and job title for all employees whose salary is more than any average salary of any department
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT employee_id, first_name, last_name, job_id  
+FROM employees  
+WHERE salary > ALL  
+( SELECT AVG(salary)  
+FROM employees  
+GROUP BY department_id 
+);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee name and department for any existence of those employees whose salary is more than 3700
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, department_id 
+FROM employees 
+WHERE EXISTS 
+(SELECT * 
+FROM employees 
+WHERE salary >3700 );
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the department id and the total salary for those departments which contains at least one employee
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT departments.department_id, result1.total_amt 
+FROM departments,  
+( SELECT employees.department_id, SUM(employees.salary) total_amt  
+FROM employees  
+GROUP BY department_id) result1 
+WHERE result1.department_id = departments.department_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee id, name and the job id column with a modified title SALESMAN for those employees whose job title is ST_MAN and DEVELOPER for whose job title is IT_PROG
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT  employee_id,  first_name, last_name,  
+CASE job_id  
+WHEN 'ST_MAN' THEN 'SALESMAN'  
+WHEN 'IT_PROG' THEN 'DEVELOPER'  
+ELSE job_id  
+END AS designation,  salary 
+FROM employees;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee id, name, salary and the SalaryStatus column with a title HIGH and LOW respectively for those employees whose salary is more than and less than the average salary of all employees
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT  employee_id,  first_name, last_name, salary,  
+CASE WHEN salary >= (SELECT AVG(salary) 
+FROM employees) THEN 'HIGH'  
+ELSE 'LOW'  
+END AS SalaryStatus 
+FROM employees;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee id, name, SalaryDrawn, AvgCompare and the SalaryStatus column with a title HIGH and LOW respectively for those employees whose salary is more than and less than the average salary of all employees
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT  employee_id,  first_name, last_name,  salary AS SalaryDrawn,  
+ROUND((salary -(SELECT AVG(salary) FROM employees)),2) AS AvgCompare,  
+CASE  WHEN salary >= 
+(SELECT AVG(salary) 
+FROM employees) THEN 'HIGH'  
+ELSE 'LOW'  
+END AS SalaryStatus 
+FROM employees;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display a set of rows to find all departments that do actually have one or more employees assigned to them
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT  department_name 
+FROM departments 
+WHERE department_id IN 
+(SELECT DISTINCT(department_id) 
+FROM employees);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Identify all employees who work in departments located in the United Kingdom
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name 
+FROM employees 
+WHERE department_id IN 
+(SELECT department_id 
+FROM departments 
+WHERE location_id IN 
+(SELECT location_id 
+FROM locations 
+WHERE country_id = 
+(SELECT country_id 
+FROM countries 
+WHERE country_name='United Kingdom')));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Identify all the employees who earn more than the average and who work in any of the IT departments
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT last_name 
+FROM employees 
+WHERE department_id IN 
+(SELECT department_id 
+FROM departments 
+WHERE department_name LIKE 'IT%') 
+AND salary > 
+(SELECT avg(salary) 
+FROM employees);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Determine who earns more than Mr. Ozer
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, salary 
+FROM employees 
+WHERE salary > 
+(SELECT salary 
+FROM employees 
+WHERE last_name='Ozer') 
+ORDER BY  last_name;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find out which employees have a manager who works for a department based in the US
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name,last_name FROM employees 
+WHERE manager_id IN 
+(SELECT employee_id 
+FROM employees 
+WHERE department_id IN 
+(SELECT department_id 
+FROM departments 
+WHERE location_id IN 
+(SELECT location_id 
+FROM locations 
+WHERE country_id='US')));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Find out the names of all employees whose salary is greater than 50% of their department's total salary bill
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT e1.first_name, e1.last_name 
+FROM employees e1 
+WHERE salary > 
+( SELECT (SUM(salary))*.5 
+FROM employees e2 
+WHERE e1.department_id=e2.department_id);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Write a query to get the details of employees who are managers
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM employees 
+WHERE EXISTS 
+(SELECT * 
+FROM departments 
+WHERE manager_id = employee_id);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Write a query to get the details of employees who manage a department
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM employees 
+WHERE employee_id=ANY 
+( SELECT manager_id FROM departments );
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the employee id, name, salary, department name and city for all the employees who gets the salary as the salary earn by the employee which is maximum within the joining person January 1st, 2002 and December 31st, 2003
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT a.employee_id, a.first_name, a.last_name, a.salary, b.department_name, c.city  
+FROM employees a, departments b, locations c  
+WHERE a.salary =  
+(SELECT MAX(salary) 
+FROM employees 
+WHERE hire_date BETWEEN '01/01/2002' AND '12/31/2003') 
+AND a.department_id=b.department_id 
+AND b.location_id=c.location_id;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the department code and name for all departments which located in the city London
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT department_id, department_name 
+  FROM departments 
+    WHERE location_id = 
+            (
+              SELECT location_id 
+                FROM locations 
+                  WHERE city = 'London'
+            );
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, salary, and department ID for all those employees who earn more than the average salary and arrange the list in descending order on salary
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name , salary, department_id 
+  FROM employees 
+    WHERE salary > (
+                SELECT AVG(salary)
+                   FROM employees )
+    ORDER BY salary DESC;
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, salary, and department ID for those employees who earn more than the maximum salary of a department which ID is 40
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, salary, department_id 
+ FROM employees
+  WHERE salary > ALL 
+                  (SELECT salary 
+                    FROM employees 
+                     WHERE department_id = 40);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the department name and Id for all departments where they located, that Id is equal to the Id for the location where department number 30 is located
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT department_name, department_id
+  FROM departments 
+   WHERE location_id = 
+        (
+          SELECT location_id 
+            FROM  departments  
+             WHERE department_id = 30);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, salary, and department ID for all those employees who work in that department where the employee works who hold the ID 201
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, salary, department_id 
+ FROM employees 
+  WHERE department_id = 
+     (SELECT department_id 
+       FROM employees 
+        WHERE employee_id = 201);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, salary, and department ID for those employees whose salary is equal to the salary of the employee who works in that department which ID is 40
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, salary, department_id 
+ FROM employees
+  WHERE salary IN (
+                   SELECT salary 
+                     FROM employees 
+                       WHERE department_id = 40);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, and department code for all employees who work in the department Marketing
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, department_id 
+ FROM employees 
+   WHERE department_id = 
+       (SELECT department_id 
+          FROM departments 
+           WHERE department_name = 'Marketing');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, salary, and department ID for those employees who earn more than the minimum salary of a department which ID is 40
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, salary, department_id 
+ FROM employees
+  WHERE salary > ANY 
+    (SELECT salary 
+       FROM employees 
+          WHERE department_id = 40);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the full name, email, and designation for all those employees who was hired after the employee whose ID is 165
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name ||' '|| last_name AS Full_Name , hire_date 
+ FROM employees 
+  WHERE hire_date > (
+                     SELECT hire_date 
+                       FROM employees 
+                        WHERE employee_id = 165);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, salary, and department ID for those employees who earn less than the minimum salary of a department which ID is 70
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, salary, department_id 
+ FROM employees
+  WHERE salary < ALL 
+     (SELECT salary 
+       FROM employees 
+         WHERE department_id = 70);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, salary, and department ID for those employees who earn less than the average salary, and also work at the department where the employee Laura is working as a first name holder
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, salary, department_id 
+ FROM employees
+   WHERE salary < 
+      (SELECT AVG(salary) 
+        FROM employees )
+         AND department_id = 
+               (SELECT department_id 
+                 FROM employees 
+                  WHERE first_name = 'Laura');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the first and last name, salary and department ID for those employees whose department is located in the city London
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name, last_name, salary, department_id 
+  FROM employees
+    WHERE department_id IN 
+          (SELECT department_id 
+            FROM departments 
+             WHERE location_id = 
+               (SELECT location_id 
+                 FROM locations 
+                   WHERE city = 'London'));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the city of the employee whose ID 134 and works there
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT city 
+	FROM locations 
+		WHERE location_id = 
+    (SELECT location_id 
+		FROM departments 
+			WHERE department_id =
+             	(SELECT department_id 
+					FROM employees 
+						WHERE employee_id=134));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the details of departments which max salary is 7000 or above for those employees who already done one or more jobs
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM departments
+WHERE DEPARTMENT_ID IN
+    (SELECT DEPARTMENT_ID
+     FROM employees
+     WHERE EMPLOYEE_ID IN
+         (SELECT EMPLOYEE_ID
+          FROM job_history
+          GROUP BY EMPLOYEE_ID
+          HAVING COUNT(EMPLOYEE_ID) > 1)
+     GROUP BY DEPARTMENT_ID
+     HAVING MAX(SALARY) > 7000);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the detail information of departments which starting salary is at least 8000
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * FROM departments 
+	WHERE department_id IN 
+		( SELECT department_id 
+                   FROM employees 
+			GROUP BY department_id 
+				HAVING MIN(salary)>=8000);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the full name of manager who is supervising 4 or more employees
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT first_name || ' ' || last_name AS Manager_name,department_id
+	FROM employees 
+		WHERE employee_id IN 
+		(SELECT manager_id 
+		FROM employees 
+			GROUP BY manager_id 
+			HAVING COUNT(*)>=4);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the details of the current job for those employees who worked as a Sales Representative in the past
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+	FROM jobs 
+		WHERE job_id IN 
+		(SELECT job_id 
+			FROM employees 
+				WHERE employee_id IN 
+        (SELECT employee_id 
+			FROM job_history 
+				WHERE job_id='SA_REP'));
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the infromation about those employees who earn second lowest salary of all the employees
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT *
+FROM employees m
+WHERE  2 = (SELECT COUNT(DISTINCT salary ) 
+            FROM employees
+            WHERE  salary <= m.salary);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the details of departments managed by Susan
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+	FROM departments 
+	WHERE manager_id IN 
+	(SELECT employee_id 
+		FROM employees 
+			WHERE first_name='Susan');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display the department ID, full name, salary for highest salary drawar in a department
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT department_id, first_name || ' ' || last_name AS Employee_name, salary 
+	FROM employees a
+		WHERE salary = 
+			(SELECT MAX(salary) 
+				FROM employees 
+			WHERE department_id = a.department_id);
+
+
+-------------------------------------------------------------------------------------------------------------------------
+Display all the information of those employees who did not have any job in the past
+-------------------------------------------------------------------------------------------------------------------------
+
+SELECT * 
+	FROM employees 
+		WHERE employee_id NOT IN 
+       (SELECT employee_id 
+		FROM job_history);
+
