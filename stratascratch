@@ -1,0 +1,48 @@
+--company detail table
+select * from forbes_global_2010_2014;
+
+--sum of profit by company
+SELECT company,
+             sum(profits) AS profit
+      FROM forbes_global_2010_2014
+      GROUP BY company;
+      
+--rank based on profit
+SELECT *,
+          dense_rank() OVER (
+                       ORDER BY profit DESC) as rank
+   FROM
+     (SELECT company,
+             sum(profits) AS profit
+      FROM forbes_global_2010_2014
+      GROUP BY company) sq;
+      
+-- Top 3 company of the world
+SELECT company,
+       profit
+FROM
+  (SELECT *,
+          dense_rank() OVER (
+                       ORDER BY profit DESC) as rank
+   FROM
+     (SELECT company,
+             sum(profits) AS profit
+      FROM forbes_global_2010_2014
+      GROUP BY company) sq) sq2
+WHERE rank <=3;
+
+
+SELECT name,
+       review_count
+FROM yelp_business
+WHERE business_id in
+    (SELECT business_id
+     FROM
+       (SELECT business_id,
+               rank() OVER (
+                            ORDER BY review_count DESC)
+        FROM yelp_business) sq
+     WHERE rank <=5)
+ORDER BY review_count DESC
+
+ID 10078:
